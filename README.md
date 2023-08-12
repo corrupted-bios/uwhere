@@ -1,6 +1,6 @@
 # UWhere
 
-UWhere (URL Where) is a tool that follows URLs given through the pipe and outputs the final URL redirected.
+UWhere (URL Where) is a tool that follows URLs given through the pipe (stdin) and outputs the final URL redirected.
 
 ## Install
 
