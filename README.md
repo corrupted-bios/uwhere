@@ -5,7 +5,7 @@ UWhere (URL Where) is a tool that follows URLs given through the pipe (stdin) an
 ## Install
 
 ```
-▶ go install github.com/chadmelancia/uwhere@latest
+▶ go install github.com/corrupted-bios/uwhere@latest
 ```
 
 ## Basic Usage
