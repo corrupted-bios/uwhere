@@ -1,3 +1,3 @@
-module github.com/corrupted-bios/uwhere
+module github.com/davidwkirsch/uwhere
 
 go 1.21
