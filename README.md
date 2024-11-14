@@ -2,6 +2,7 @@
 
 UWhere (URL Where) is a tool that follows URLs given through the pipe (stdin) and outputs the final URL redirected.
 
+*That project is mine. You'll see that I forked it from another repo, that other repo is from another account that I have.
 ## Install
 
 ```
