@@ -24,7 +24,6 @@ func (p probeArgs) String() string {
 }
 
 func main() {
-
 	// concurrency flag
 	var concurrency int
 	flag.IntVar(&concurrency, "c", 20, "set the concurrency level")
@@ -36,13 +35,17 @@ func main() {
 	flag.Parse()
 
 	// make an actual time.Duration out of the timeout
-	timeout := time.Duration(to * 1000000)
+	timeout := time.Duration(to) * time.Millisecond
 
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	http.DefaultTransport.(*http.Transport).ResponseHeaderTimeout = timeout
+	// Create a custom HTTP client with redirect handling
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+		Timeout: timeout,
+	}
 
 	output := make(chan string)
-
 	httpsURLs := make(chan string)
 
 	// HTTPS workers
@@ -51,10 +54,10 @@ func main() {
 		httpsWG.Add(1)
 
 		go func() {
-			for url := range httpsURLs {
-				output <- isListening(url)
-			}
 			defer httpsWG.Done()
+			for url := range httpsURLs {
+				output <- isListening(client, url)
+			}
 		}()
 	}
 
@@ -62,16 +65,15 @@ func main() {
 	var outputWG sync.WaitGroup
 	outputWG.Add(1)
 	go func() {
+		defer outputWG.Done()
 		for o := range output {
 			fmt.Println(o)
 		}
-		outputWG.Done()
 	}()
 
 	// Close the output channel when the HTTP workers are done
 	go func() {
 		httpsWG.Wait()
-
 		close(output)
 	}()
 
@@ -82,12 +84,10 @@ func main() {
 		httpsURLs <- domain
 	}
 
-	// once we've sent all the URLs off we can close the
-	// input/httpsURLs channel. The workers will finish what they're
-	// doing and then call 'Done' on the WaitGroup
+	// Close the input channel
 	close(httpsURLs)
 
-	// check there were no errors reading stdin (unlikely)
+	// Check for errors reading stdin
 	if err := sc.Err(); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to read input: %s\n", err)
 	}
@@ -95,14 +95,13 @@ func main() {
 	outputWG.Wait()
 }
 
-// func isListening(client *http.Client, url, method string) bool {
-func isListening(url string) string {
-	resp, err := http.Get(url)
-
+func isListening(client *http.Client, url string) string {
+	resp, err := client.Get(url)
 	if err != nil {
-		return ""
+		return fmt.Sprintf("Error: %s", err)
 	}
-	resp.Close = true
+	defer resp.Body.Close() // Ensure the response body is closed
+
 	urlFinal := resp.Request.URL.String()
 	return urlFinal
 }
