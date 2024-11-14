@@ -32,7 +32,7 @@ https://account.example.net
 You can set the concurrency level with the `-c` flag:
 
 ```
-▶ cat domains.txt | httprobe -c 50
+▶ cat domains.txt | uwhere -c 50
 ```
 
 ## Timeout
@@ -40,7 +40,7 @@ You can set the concurrency level with the `-c` flag:
 You can change the timeout by using the `-t` flag and specifying a timeout in milliseconds:
 
 ```
-▶ cat domains.txt | httprobe -t 20000
+▶ cat domains.txt | uwhere -t 20000
 ```
 
 
