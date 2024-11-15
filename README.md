@@ -2,10 +2,11 @@
 
 UWhere (URL Where) is a tool that follows URLs given through the pipe (stdin) and outputs the final URL redirected.
 
+*That project is mine. You'll see that I forked it from another repo, that other repo is from another account that I have.
 ## Install
 
 ```
-▶ go install github.com/corrupted-bios/uwhere@latest
+▶ go install github.com/davidwkirsch/uwhere@latest
 ```
 
 ## Basic Usage
@@ -32,7 +33,7 @@ https://account.example.net
 You can set the concurrency level with the `-c` flag:
 
 ```
-▶ cat domains.txt | httprobe -c 50
+▶ cat domains.txt | uwhere -c 50
 ```
 
 ## Timeout
@@ -40,7 +41,7 @@ You can set the concurrency level with the `-c` flag:
 You can change the timeout by using the `-t` flag and specifying a timeout in milliseconds:
 
 ```
-▶ cat domains.txt | httprobe -t 20000
+▶ cat domains.txt | uwhere -t 20000
 ```
 
 

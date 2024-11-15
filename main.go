@@ -95,13 +95,24 @@ func main() {
 	outputWG.Wait()
 }
 
-func isListening(client *http.Client, url string) string {
-	resp, err := client.Get(url)
-	if err != nil {
-		return fmt.Sprintf("Error: %s", err)
+func isListening(client *http.Client, rawURL string) string {
+	// Add https if no protocol is present
+	if !strings.HasPrefix(rawURL, "http://") && !strings.HasPrefix(rawURL, "https://") {
+		rawURL = "https://" + rawURL
 	}
-	defer resp.Body.Close() // Ensure the response body is closed
 
+	// Try https first
+	resp, err := client.Get(rawURL)
+	if err != nil {
+		// If https fails, try http
+		httpURL := "http://" + rawURL[len("https://"):]
+		resp, err = client.Get(httpURL)
+		if err != nil {
+			return fmt.Sprintf("Error: %s", err)
+		}
+	}
+
+	defer resp.Body.Close() // Ensure the response body is closed
 	urlFinal := resp.Request.URL.String()
 	return urlFinal
 }
